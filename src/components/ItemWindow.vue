@@ -4,37 +4,35 @@
     ref="item-window__ref"
     :style="{ opacity: visible ? 1 : 0 }"
   >
-    <div
-      class="item-window__head"
-    >
-      <span style="font-size: 12px; padding-left: 4px; color: white" >Item information</span>
-      <v-spacer></v-spacer>
-      <v-icon
-        icon="mdi-window-close"
-        size="16" color="white"
-        @click="$emit('close')"
-      />
-    </div>
     <div class="item-window__body">
       <div class="item-window__item-name">
         <span class="text-h6 text-truncate" :style="{ color: item?.color }">{{ item?.name || "Undefined" }}</span>
       </div>
-      
-      <v-responsive :aspect-ratio="4/1" inline>
-        <div class="item-window__item-details">
-          <div class="item-window__item-avatar">
-            <div class="item-window__item-type text-uppercase border text-truncate">{{ item?.type ?? "None" }}</div>
+
+      <div class="item-window__item-details">
+        <div class="item-window__item-description text-grey-darken-1">{{ item?.description ?? "None" }}</div>
+        <div class="item-window__item-stats">
+          <div v-for="stat of Object.keys(item?.stats ?? {} as item_stat_t)">
+              <!-- {{ (item?.stats?.[stat as keyof item_stat_t] ?? NaN).toString().replace(/^[^-]/i, "-") }}
+              {{ Math.abs((item?.stats?.[stat as keyof item_stat_t] ?? 0) as number) }}
+              {{ stat }} -->
+               {{ generate_stat_string(stat as keyof item_stat_t) }}
           </div>
-          <div class="item-window__item-description text-grey-darken-1">{{ item?.description ?? "None" }}</div>
         </div>
-      </v-responsive>
+      </div>
     </div>
 
   </div>
 </template>
 
 <script lang="ts">
-import type { IItem } from '@/types/item';
+import type { IItem, item_stat_t } from '@/types/item';
+
+interface Props {
+  begin_position?: { x: number, y: number }
+  visible: boolean,
+  item?: IItem
+}
 
 export default {
   data: () => ({
@@ -54,6 +52,14 @@ export default {
 
       this.block.style.left = `${x + 14}px`;
       this.block.style.top = `${new_y}px`;
+    },
+
+    generate_stat_string(stat: keyof item_stat_t) {
+      const value = ((this.$props as Props).item?.stats?.[stat] ?? NaN).toString();
+      const f_part = value.replace(/^[^-]/i, (substring: string) => ('+' + substring));
+
+      const localized_stat = this.$t(`item.stat.${stat}`);
+      return `${f_part} ${localized_stat}`;
     }
   },
   watch: {
@@ -65,11 +71,8 @@ export default {
 </script>
 
 <script lang="ts" setup>
-defineProps<{
-  begin_position?: { x: number, y: number }
-  visible: boolean,
-  item?: IItem
-}>()
+
+defineProps<Props>()
 
 defineEmits<{
   (e: 'close'): void,
@@ -82,8 +85,12 @@ defineEmits<{
   top:150px;
   left:150px;
 
-  width: 500px;
-  height: 400px;
+  width: max-content;
+  min-width: 300px;
+  max-width: 500px;
+  
+  height: max-content;
+  min-height: 100px;
 
   background-color: var(--background-color);
   z-index: 999999;
@@ -93,37 +100,19 @@ defineEmits<{
 
   transition: opacity 0.15s linear;
 }
-
-.item-window__head {
-  position: relative;
-  width: 100%;
-  height: 18px;
-  
-  padding: 0 4px;
-  box-sizing: border-box;
-  
-  display: flex;
-  align-items: center;
-  
-  background-color: #1c1c1c;
-  user-select: none;
-}
-.item-window__head span, .item-window__head div {
-  pointer-events: none;
-}
-
 .item-window__body {
   display: block;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+
+  padding: 6px 8px;
 }
 
-.item-window__item-name {
-  padding: 0 16px;
-  margin: 12px 0 0;
-}
+/* .item-window__item-name {
+  padding: 0 4px;
+} */
 .item-window__item-name, .item-window__item-name * {
   display: block;
   width: 100%;
@@ -132,41 +121,11 @@ defineEmits<{
 
 .item-window__item-details {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 8px;
 }
-.item-window__item-avatar {
-  width: 25%;
-  max-width: 200px;
-  box-sizing: border-box;
-
-  padding: 4px 0 0 16px;
-  flex-grow: 1;
-}
-.item-window__item-type {
-  background: var(--background-color);
-  
-  width: 100%;
-  box-sizing: border-box;
-  text-align: center;
-
-  border-top: none !important;
-  border-radius: 0 0 8px 8px;
-}
-
 .item-window__item-description {
   line-height: 1.15rem;
-  max-width: 75%;
-
-  display: -webkit-box;
-  display: -moz-box;
-  display: box;
-  -webkit-box-orient: vertical;
-  -moz-box-orient: vertical;
-  box-orient: vertical;  
-  -webkit-line-clamp: 7;
-  -moz-line-clamp: 7;
-  line-clamp: 7;
 }
 </style>
 

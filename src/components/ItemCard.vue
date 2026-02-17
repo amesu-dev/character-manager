@@ -19,7 +19,7 @@
       >
         <div class="inventory-item__overlay flex-column justify-center" style="z-index: 1;">
           <div class="inventory-item__type">
-            <span class="text-bold text-uppercase">{{ item.type }}</span>
+            <span class="text-bold text-uppercase">{{ $t(`item.type.${item.type}`) }}</span>
           </div>
           <v-spacer></v-spacer>
           <div class="w-100 d-flex justify-end">

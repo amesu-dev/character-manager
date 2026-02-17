@@ -57,18 +57,18 @@
         <div class="character__details">
           <div class="character__stats">
             <v-card v-for="(value, key) in character.base_stats" :key="key" class="character__stat" :ripple="false" variant="outlined">
-              <span class="stat__name">{{ key.toUpperCase() }}</span>
+              <span class="stat__name">{{ $t(`stat.${key}`).toUpperCase() }}</span>
               <span class="stat__value">{{ value }}</span>
             </v-card>
           </div>
 
-          <v-divider class="border-opacity-50" style="margin: 24px auto;">Items</v-divider>
+          <v-divider class="border-opacity-50" style="margin: 24px auto;">{{ $t('item.label') }}</v-divider>
 
           <div class="inventory">
             <span
               v-if="!character.inventory.length"
               class="text-h4 text-center text-grey"
-            >There is no items</span>
+            >{{ $t('item.no_items') }}</span>
 
             <ItemCard
               v-for="inv_item in character.inventory" :key="inv_item.id"

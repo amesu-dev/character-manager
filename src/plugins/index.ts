@@ -8,6 +8,7 @@
 import vuetify from './vuetify'
 import pinia from '../stores'
 import router from '../router'
+import i18n from '../localization'
 
 // Types
 import type { App } from 'vue'
@@ -15,6 +16,7 @@ import type { App } from 'vue'
 export function registerPlugins (app: App) {
   app
     .use(vuetify)
+    .use(i18n)
     .use(router)
     .use(pinia)
 }
