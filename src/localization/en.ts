@@ -6,6 +6,12 @@ const locale: locale_t = {
     mp: "MP"
   },
 
+  tab: {
+    inventory: "Inventory",
+    skills: "Skills",
+    quests: "Quests",
+  },
+
   stat: {
     strength: "Strength",
     dexterity: "Dexterity",

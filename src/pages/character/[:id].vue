@@ -1,13 +1,12 @@
 <template>
-  <ItemWindow
+  <MouseFollowWindow
     ref="item-window__ref_component"
     style="pointer-events: none;"
-    :item="cached_items[selected_item]"
-    :visible="item_window.is_visible"
-    :begin_position="item_window.begin_position"
+    :visible="follow_window.is_visible"
+    :begin_position="follow_window.begin_position"
   >
-  
-  </ItemWindow>
+    <ItemWindowLayout :item="cached_items[selected_item]" />
+  </MouseFollowWindow>
   
   <div v-if="is_loading" class="loading">
     <p>Loading...</p>
@@ -18,76 +17,99 @@
     />
   </div>
 
-  <div v-else>
+  <div v-else class="character-page">
+    <div class="character ">
 
-    <div class="character-page">
-      <div class="character">
+      <div class="character__header bg-grey-darken-4">
+        <div class="character__avatar">
+          <v-avatar size="112">
+            <Image :src="character.avatar" />
+          </v-avatar>
+        </div>
 
-        <div class="character__header bg-grey-darken-4">
-          <div class="character__avatar">
-            <v-avatar size="112">
-              <Image :src="character.avatar" />
-            </v-avatar>
-          </div>
+        <div class="character__overview">
+          <span class="text-h4">{{ character.name }}</span>
   
-          <div class="character__overview">
-            <span class="text-h4">{{ character.name }}</span>
-    
-            <!-- Health bar -->
-            <v-progress-linear
-              v-model="character.health"
-              :max="character.max_health"
-              color="green"
-              height="16"
-            >
-              <small>{{ character.health }} / {{ character.max_health }}</small>
-            </v-progress-linear>
-            
-            <!-- Mana bar -->
-            <v-progress-linear
-              v-model="character.mana"
-              :max="character.max_mana"
-              color="blue"
-              height="16"
-            >
-              <small style="justify-self: start">{{ character.mana }} / {{ character.max_mana }}</small>
-            </v-progress-linear>
-          </div>
+          <!-- Health bar -->
+          <v-progress-linear
+            v-model="character.health"
+            :max="character.max_health"
+            color="green"
+            height="16"
+          >
+            <small>{{ character.health }} / {{ character.max_health }}</small>
+          </v-progress-linear>
+          
+          <!-- Mana bar -->
+          <v-progress-linear
+            v-model="character.mana"
+            :max="character.max_mana"
+            color="blue"
+            height="16"
+          >
+            <small style="justify-self: start">{{ character.mana }} / {{ character.max_mana }}</small>
+          </v-progress-linear>
         </div>
-        <div class="character__details">
-          <div class="character__stats">
-            <v-card v-for="(value, key) in character.base_stats" :key="key" class="character__stat" :ripple="false" variant="outlined">
-              <span class="stat__name">{{ $t(`stat.${key}`).toUpperCase() }}</span>
-              <span class="stat__value">{{ value }}</span>
-            </v-card>
-          </div>
-
-          <v-divider class="border-opacity-50" style="margin: 24px auto;">{{ $t('item.label') }}</v-divider>
-
-          <div class="inventory">
-            <span
-              v-if="!character.inventory.length"
-              class="text-h4 text-center text-grey"
-            >{{ $t('item.no_items') }}</span>
-
-            <ItemCard
-              v-for="inv_item in character.inventory" :key="inv_item.id"
-              :item="(cached_items[inv_item.id] as IItem)" :amount="inv_item.amount"
-              @mouseenter="() => selected_item = inv_item.id"
-              @mouseleave="() => { item_window.is_visible = false; selected_item = '' }"
-              @mousemove="move_iwindow"
-              @keydown="(e: KeyboardEvent) => { console.log('down', e); item_window.is_visible = e.shiftKey }"
-              @keyup="(e: KeyboardEvent) => item_window.is_visible = e.shiftKey"
-            />
-          </div>
-        </div>
-
       </div>
+      <div class="character__details ">
+        <div class="character__stats">
+          <v-card v-for="(value, key) in character.base_stats" :key="key" class="character__stat" :ripple="false" variant="outlined">
+            <span class="stat__name">{{ $t(`stat.${key}`).toUpperCase() }}</span>
+            <span class="stat__value">{{ value }}</span>
+          </v-card>
+        </div>
+
+        <v-sheet elevation="2" >
+          <v-tabs v-model="tab" class="flex-grow-0"
+            color="cyan"
+            bg-color="blue-grey-darken-4"
+            slider-color="teal-darken-2"
+            grow
+          >
+            <v-tab value="inventory">{{ $t('tab.inventory') }}</v-tab>
+            <v-tab value="skills">{{ $t('tab.skills') }}</v-tab>
+            <v-tab value="quests">{{ $t('tab.quests') }}</v-tab>
+          </v-tabs>
+
+          <v-divider></v-divider>
+
+          <v-tabs-window
+            v-model="tab"
+            id="character-tabs"
+          >
+            <v-tabs-window-item value="inventory">
+              <div class="inventory">
+                <span
+                  v-if="!character.inventory.length"
+                  class="text-h4 text-center text-grey"
+                >{{ $t('item.no_items') }}</span>
+
+                <ItemCard
+                  v-for="inv_item in character.inventory" :key="inv_item.id"
+                  :item="(cached_items[inv_item.id] as IItem)" :amount="inv_item.amount"
+                  @mouseenter="() => selected_item = inv_item.id"
+                  @mouseleave="() => { follow_window.is_visible = false; selected_item = '' }"
+                  @mousemove="move_iwindow"
+                  @keydown="(e: KeyboardEvent) => { console.log('down', e); follow_window.is_visible = e.shiftKey }"
+                  @keyup="(e: KeyboardEvent) => follow_window.is_visible = e.shiftKey"
+                />
+              </div>
+            </v-tabs-window-item>
+            <v-tabs-window-item value="skills">
+              <v-sheet class="pa-5" color="orange">Two</v-sheet>
+            </v-tabs-window-item>
+            <v-tabs-window-item value="quests">
+              <v-sheet class="pa-5" color="brown">Three</v-sheet>
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </v-sheet>
+        
+      </div>
+
     </div>
     <div class="group-list">
   
     </div>
-
   </div>
 </template>
 
@@ -106,11 +128,13 @@ export default {
   data() {
     return {
       is_loading: true,
-      item_window: {
+      follow_window: {
         is_visible: false,
         begin_position: { x: 0, y: 0 },
         is_shift_down: false,
       },
+
+      tab: "inventory" as "inventory" | "skills" | "quests",
 
       id: useRoute().params.id,
       character: {} as ICharacter,
@@ -141,35 +165,55 @@ export default {
   },
   mounted() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
-      this.item_window.is_shift_down = e.shiftKey;
+      this.follow_window.is_shift_down = e.shiftKey;
     });
     window.addEventListener('keyup', (e: KeyboardEvent) => {
-      this.item_window.is_shift_down = e.shiftKey;
+      this.follow_window.is_shift_down = e.shiftKey;
     });
+
+    window.addEventListener('resize', this.compute_tabs_height);
   },
 
   methods: {
     // Shows item window at corrected passed (x, y)
     move_iwindow(event: MouseEvent) {
-      this.item_window.begin_position = { x: event.pageX, y: event.pageY };
+      this.follow_window.begin_position = { x: event.pageX, y: event.pageY };
 
       
       this.update_iwindow()
     },
     update_iwindow() {
-      if (this.item_window.is_shift_down && this.selected_item.length && !this.item_window.is_visible)
-        this.item_window.is_visible = true;
-      else if (!(this.item_window.is_shift_down && this.selected_item.length) && this.item_window.is_visible)
-        this.item_window.is_visible = false;
+      if (this.follow_window.is_shift_down && this.selected_item.length && !this.follow_window.is_visible)
+        this.follow_window.is_visible = true;
+      else if (!(this.follow_window.is_shift_down && this.selected_item.length) && this.follow_window.is_visible)
+        this.follow_window.is_visible = false;
+    },
+
+    compute_tabs_height() {
+      this.$nextTick(() => {
+        const tabs_container = document.querySelector('#character-tabs') as HTMLElement;
+        
+        if (!tabs_container) return;
+        const tab_height = window.innerHeight - tabs_container.offsetTop;
+        tabs_container.style.height = `${tab_height}px`;
+      });
     }
   },
   watch: {
-    'item_window.is_shift_down'(new_value, old_value) {
+    'follow_window.is_shift_down'(new_value, old_value) {
       if (old_value === new_value) return;
 
       this.update_iwindow();
+    },
+
+    is_loading: {
+      once: true,
+      async handler() {
+        this.compute_tabs_height();
+      }
     }
-  }
+  },
+  watchOnce: {}
 }
 </script>
 
@@ -199,6 +243,7 @@ export default {
   padding: 0 16px;
   
   box-sizing: border-box;
+  height: 100%;
 }
 
 .character {
@@ -207,7 +252,7 @@ export default {
   width: 100%;
   margin-left: 0 auto;
 
-  height: 150vh;
+  height: 100%;
 }
 
 .character__header {
@@ -271,9 +316,16 @@ export default {
 }
 
 .inventory {
+  padding: 24px 12px;
+
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   gap: 8px 12px;
 }
+.v-window {
+  overflow-x: hidden;
+  overflow-y: scroll !important;
+}
+
 </style>

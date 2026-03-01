@@ -12,8 +12,8 @@
 }
 
 html, body, #app, main {
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
   
   margin: 0;
   padding: 0;
@@ -23,5 +23,22 @@ html, body, #app, main {
   background-color: var(--background-color);
 
   overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  border-radius: 50%;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #afafaf;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
 }
 </style>

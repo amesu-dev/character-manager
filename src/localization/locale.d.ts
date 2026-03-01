@@ -8,6 +8,12 @@ export type locale_t = {
     mp: string,
   },
 
+  tab: {
+    inventory: string,
+    skills: string,
+    quests: string,
+  },
+
   stat: { [key in keyof stats_t]: string },
 
   item: {

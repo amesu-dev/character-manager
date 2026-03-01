@@ -5,38 +5,21 @@
     :style="{ opacity: visible ? 1 : 0 }"
   >
     <div class="item-window__body">
-      <div class="item-window__item-name">
-        <span class="text-h6 text-truncate" :style="{ color: item?.color }">{{ item?.name || "Undefined" }}</span>
-      </div>
-
-      <div class="item-window__item-details">
-        <div class="item-window__item-description text-grey-darken-1">{{ item?.description ?? "None" }}</div>
-        <div class="item-window__item-stats">
-          <div v-for="stat of Object.keys(item?.stats ?? {} as item_stat_t)">
-              <!-- {{ (item?.stats?.[stat as keyof item_stat_t] ?? NaN).toString().replace(/^[^-]/i, "-") }}
-              {{ Math.abs((item?.stats?.[stat as keyof item_stat_t] ?? 0) as number) }}
-              {{ stat }} -->
-               {{ generate_stat_string(stat as keyof item_stat_t) }}
-          </div>
-        </div>
-      </div>
+      <slot>
+        
+      </slot>
     </div>
-
   </div>
 </template>
 
 <script lang="ts">
-import type { IItem, item_stat_t } from '@/types/item';
-
 interface Props {
   begin_position?: { x: number, y: number }
   visible: boolean,
-  item?: IItem
 }
 
 export default {
   data: () => ({
-    is_dragging: false,
     mouse_offset: { x: 0, y: 0 },
     block: {} as HTMLElement,
   }),
@@ -53,14 +36,6 @@ export default {
       this.block.style.left = `${x + 14}px`;
       this.block.style.top = `${new_y}px`;
     },
-
-    generate_stat_string(stat: keyof item_stat_t) {
-      const value = ((this.$props as Props).item?.stats?.[stat] ?? NaN).toString();
-      const f_part = value.replace(/^[^-]/i, (substring: string) => ('+' + substring));
-
-      const localized_stat = this.$t(`item.stat.${stat}`);
-      return `${f_part} ${localized_stat}`;
-    }
   },
   watch: {
     begin_position(new_value, old_value) {

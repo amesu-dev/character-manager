@@ -1,7 +1,8 @@
 <template>
   <v-responsive
-    :aspect-ratio="3/3.5" inline width="calc(50% - 8px)"
+    :aspect-ratio="3/3.5" inline
     class="inventory-item rounded-lg"
+    :style="{ '--box-shadow-color': `${item.color}`, width: 'calc(50% - 8px)' }"
   >
     <div
       class="inventory-item__overlay"
@@ -60,9 +61,10 @@ export default {
 .inventory-item:hover {
   transform: translateY(-8px);
 
-  -webkit-box-shadow: 0px 3px 8px 2px rgba(239, 239, 239, 0.2);
-  -moz-box-shadow: 0px 3px 8px 2px rgba(239, 239, 239, 0.2);
-  box-shadow: 0px 3px 8px 2px rgba(239, 239, 239, 0.2);
+  --box-shadow-color: var(--box-shadow-color, rgba(239, 239, 239, 0.2))
+  -webkit-box-shadow: 0px 3px 8px 2px var(--box-shadow-color);
+  -moz-box-shadow: 0px 3px 8px 2px var(--box-shadow-color);
+  box-shadow: 0px 3px 8px 2px var(--box-shadow-color);
 }
 
 .inventory-item__container {

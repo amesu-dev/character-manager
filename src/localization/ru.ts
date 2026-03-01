@@ -6,6 +6,12 @@ const locale: locale_t = {
     mp: "МП"
   },
 
+  tab: {
+    inventory: "Инвентарь",
+    skills: "Способности",
+    quests: "Задания",
+  },
+
   stat: {
     strength: "Сила",
     dexterity: "Телосложение",
