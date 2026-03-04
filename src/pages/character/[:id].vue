@@ -146,18 +146,18 @@ export default {
   },
 
   async beforeMount() {
-    this.character = await fetch(`http://localhost:8000/api/character/${this.id}`)
+    this.character = await fetch(`/api/character/${this.id}`)
       .then(res => res.json(), err => err);
     
     if ("message" in this.character) useRouter().push('/404');
     
-    const items = await fetch(`http://localhost:8000/api/item?ids=${this.character.inventory.map(i => i.id).join(",")}`)
+    const items = await fetch(`/api/item?ids=${this.character.inventory.map(i => i.id).join(",")}`)
       .then(res => res.json(), err => err);
 
     if ("message" in items) throw new Error("Can't fetch items!");
     for (const item of (items as IItem[])) this.cached_items[item._id] = item;
 
-    const skills = await fetch(`http://localhost:8000/api/skill?ids=${this.character.skills.map(s => s.id).join(",")}`)
+    const skills = await fetch(`/api/skill?ids=${this.character.skills.map(s => s.id).join(",")}`)
       .then(res => res.json(), err => err);
 
     console.log(this.character);
